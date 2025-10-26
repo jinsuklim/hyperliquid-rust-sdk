@@ -4,7 +4,7 @@ use alloy::{
     primitives::{keccak256, Address, Signature, B256},
     signers::local::PrivateKeySigner,
 };
-use log::debug;
+use log::trace;
 use reqwest::Client;
 use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 
@@ -159,14 +159,14 @@ impl ExchangeClient {
         };
         let res = serde_json::to_string(&exchange_payload)
             .map_err(|e| Error::JsonParse(e.to_string()))?;
-        debug!("Sending request {res:?}");
+        trace!("Sending request {res:?}");
 
         let output = &self
             .http_client
             .post("/exchange", res)
             .await
             .map_err(|e| Error::JsonParse(e.to_string()))?;
-        debug!("Response: {output}");
+        trace!("Response: {output}");
         serde_json::from_str(output).map_err(|e| Error::JsonParse(e.to_string()))
     }
 
@@ -447,7 +447,7 @@ impl ExchangeClient {
                 .map_err(|_| Error::FloatStringParse)?
         };
 
-        debug!("px before slippage: {px:?}");
+        trace!("px before slippage: {px:?}");
         let slippage_factor = if is_buy {
             1.0 + slippage
         } else {
@@ -458,7 +458,7 @@ impl ExchangeClient {
         // Round to the correct number of decimal places and significant figures
         let px = round_to_significant_and_decimal(px, 5, price_decimals);
 
-        debug!("px after slippage: {px:?}");
+        trace!("px after slippage: {px:?}");
         Ok((px, sz_decimals))
     }
 
