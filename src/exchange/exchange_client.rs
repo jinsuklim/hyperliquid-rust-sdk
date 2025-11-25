@@ -596,7 +596,7 @@ impl ExchangeClient {
         let mut transformed_modifies = Vec::new();
         for modify in modifies.into_iter() {
             transformed_modifies.push(ModifyRequest {
-                oid: modify.oid,
+                oid: uuid_to_hex_string(modify.oid),
                 order: modify.order.convert(&self.coin_to_asset)?,
             });
         }
